@@ -13,14 +13,38 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PrintIcon from '@mui/icons-material/Print';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
+// for model 
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Alert } from '@mui/material';
+
 function Animallicense() {
   const [productData, setProductData]= useState([]);
   const [filterData, setFilterData]= useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [getId, setId]= useState('');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  
+  const handleClickOpen = (val) => {
+        setId(val)      
+        setOpen(true);     
+  };
+
+  const handleClose = (val) => {
+    const filterdata= productData.filter( (item)=>item.id!==val);
+    setProductData(filterdata)
+    setOpen(false);
+  };
+
+  const handleCancel=()=>{
+    setOpen(false);
+  }
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
@@ -43,13 +67,7 @@ function Animallicense() {
     getProduct();
   }, [])
 
-  const handleDelete=(val)=>{
-    //alert(val)
-    const filterdata= productData.filter( (item)=>item.id!==val);
-    setProductData(filterdata)
-  }
-
-  const handleSearch=(e)=>{
+   const handleSearch=(e)=>{
     const searchdata= filterData.filter( (item)=>item.name.toLowerCase().includes(e.target.value) || item.email.toLowerCase().includes(e.target.value));
     setProductData(searchdata)
   }
@@ -101,7 +119,7 @@ function Animallicense() {
             </TableCell>
             <TableCell>
             <Link to={`/editUser/${ pdata.id}`} className="btn btn-success mx-2"><CreateIcon/></Link>
-              <Link className='btn btn-danger mx-1' onClick={()=>handleDelete(pdata.id)}> <DeleteIcon/></Link>
+              <Link className='btn btn-danger mx-1' onClick={()=>handleClickOpen(pdata.id)}> <DeleteIcon/></Link>
             </TableCell>
             </TableRow >
               ))              
@@ -126,6 +144,33 @@ function Animallicense() {
         
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+
+
+{open===true? (
+<Dialog
+       open={open}
+      
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+         Are you Sure Delete the Records!
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous
+            location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button  onClick={()=>handleClose(getId)} autoFocus> OK</Button>
+        </DialogActions>
+      </Dialog>
+):("")
+}
+
    </Paper>
   );
 }
